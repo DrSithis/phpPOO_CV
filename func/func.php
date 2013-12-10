@@ -8,3 +8,4 @@
         return array('intitule' => utf8_decode($Intitule), 'anneedebut' => $Anneedebut, 'anneefin' => $Anneefin, 'ecole' => utf8_decode($Ecole), 'ville' => utf8_decode($Ville), 'categorie' => $Categorie);
     }  
 
+    
