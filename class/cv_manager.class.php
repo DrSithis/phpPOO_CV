@@ -1,5 +1,4 @@
 <?php
-
 class CvManager {
 
     private $selectAll;
@@ -7,6 +6,7 @@ class CvManager {
     private $selectAllAdresse;
     private $selectAllContenu;
     
+    private $selectAllNomPersonne;
     private $selectIdAdresse;
     private $selectIdPersonne;
             
@@ -17,10 +17,11 @@ class CvManager {
     //--INIT--//
     public function __construct($db) {
         $this->selectAll = $db->prepare("SELECT * FROM personne p, adresse a, categorie c, contenu ct WHERE p.adresse=a.id AND p.id=ct.personne AND c.id=ct.categorie");
-        $this->selectAllPersonne = $db->prepare("SELECT * FROM personne p");
+        $this->selectAllPersonne = $db->prepare("SELECT * FROM personne");
         $this->selectAllAdresse = $db->prepare("SELECT * FROM adresse a");
         $this->selectAllContenu = $db->prepare("SELECT * FROM contenu ct ");
         
+        $this->selectAllNomPersonne = $db -> prepare("SELECT nom, prenom FROM personne");
         $this->selectIdAdresse = $db -> prepare("SELECT id FROM adresse a WHERE num=:num AND rue=:rue AND cp=:cp AND ville=:ville AND pays=:pays");
         $this->selectIdPersonne = $db -> prepare("SELECT id FROM personne p WHERE nom=:nom AND prenom=:prenom AND email=:email");
         
@@ -42,7 +43,7 @@ class CvManager {
 
     private function insertionAllContenu(array $Contenu, $idPersonne) {
         foreach ($Contenu as $uncontenu) {
-            echo $this->insertContenu($uncontenu, $idPersonne);
+            $this->insertContenu($uncontenu, $idPersonne);
         }
     }
 
@@ -66,6 +67,11 @@ class CvManager {
         return $this->selectIdAdresse->fetch();
     }
     
+    public function selectAllNomPersonne(){
+        $this->selectAllNomPersonne->execute();
+        return $this->selectAllNomPersonne->fetchAll();
+    }
+    
     public function selectCountAdresse(array $Adresse){
         $this->selectIdAdresse->execute(array(':num'=>$Adresse['num'], ':rue'=>$Adresse['rue'], ':cp'=>$Adresse['cp'], ':ville'=>$Adresse['ville'], ':pays'=>$Adresse['pays']));
         return $this->selectIdAdresse->rowCount();
@@ -87,7 +93,7 @@ class CvManager {
     }
     
     public function selectAllPersonne(){
-        $this->selectAllPersone->execute();
+        $this->selectAllPersonne->execute();
         return $this->selectAllPersonne->fetchAll();
     }
 
@@ -102,7 +108,6 @@ class CvManager {
     }
     
     //--+INSERT+--//
-    
     public function insertAdresse(array $Adresse){
         $this->insertAdresse->execute(array(':num'=>$Adresse['num'], ':rue'=>$Adresse['rue'], ':cp'=>$Adresse['cp'], 
                                             ':ville'=>$Adresse['ville'], ':pays'=>$Adresse['pays']));
@@ -118,7 +123,7 @@ class CvManager {
     public function insertContenu(array $Contenu, $idpersonne){
         if($Contenu['categorie'] == 'experience'){$categorie = 1;}
         elseif ($Contenu['categorie'] == 'formation') {$categorie = 2;}
-        $this->insertContenu->execute(array(':intitule'=>$Contenu['intitule'], ':anneedebut'=>$Contenu['anneedebut'], ':anneefin'=>$Contenu['anneefin'], 
+        $this->insertContenu->execute(array(':intitule'=>$Contenu['intitule'], ':anneedebut'=>$Contenu['anneedebut'], ':anneefin'=>$Contenu['anneefin'], ':ecole'=>$Contenu['ecole'], 
                                             ':ville'=>$Contenu['ville'], ':idpersonne'=>$idpersonne, ':idcategorie'=>$categorie));
         return $this->insertContenu->rowCount();
     }
