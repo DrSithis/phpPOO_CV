@@ -36,13 +36,13 @@ class CvManager {
             if($this->controleDoublePersonne($Nom, $Prenom, $Email, $Intitulecv, $idadresse['0']) == 1){
                 $idpersonne = $this->selectIdPersonne($Nom, $Prenom, $Email);
                 $this->insertionAllContenu($Contenu, $idpersonne['0']);
-            }else{echo 'error insert personne';}
-        }else{echo 'error insert adresse';}
+            }else{echo 'Error insert personne';}
+        }else{echo 'Error insert adresse';}
     }
 
     private function insertionAllContenu(array $Contenu, $idPersonne) {
         foreach ($Contenu as $uncontenu) {
-            $this->insertContenu($uncontenu, $idPersonne);
+            echo $this->insertContenu($uncontenu, $idPersonne);
         }
     }
 
@@ -116,11 +116,8 @@ class CvManager {
     }
     
     public function insertContenu(array $Contenu, $idpersonne){
-        if($Contenu['categorie'] == 'experience'){
-            $categorie = 1;
-        }elseif ($Contenu['categorie'] == 'formation') {
-            $categorie = 2;
-        }
+        if($Contenu['categorie'] == 'experience'){$categorie = 1;}
+        elseif ($Contenu['categorie'] == 'formation') {$categorie = 2;}
         $this->insertContenu->execute(array(':intitule'=>$Contenu['intitule'], ':anneedebut'=>$Contenu['anneedebut'], ':anneefin'=>$Contenu['anneefin'], 
                                             ':ville'=>$Contenu['ville'], ':idpersonne'=>$idpersonne, ':idcategorie'=>$categorie));
         return $this->insertContenu->rowCount();
