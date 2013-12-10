@@ -38,7 +38,6 @@ class Cv {
         
         $this->setToutContenu($this->getCount, $this->getAllContenu());
         $this->setCount($this->getCount + 1);
-        echo $this->getCount;
     }
     
     //--METHODE--//  
