@@ -20,6 +20,15 @@ class Cv {
         $this->count = 0;
     }
     
+    function construct($Nom, $Prenom, $Email, $Intitule, array $Adresse) {
+        $this->setNom($Nom);
+        $this->setPrenom($Prenom);
+        $this->setEmail($Email);
+        $this->setIntitule($Intitule);
+        $this->construct_Adresse($Adresse);
+        $this->count = 0;
+    }
+    
     private function construct_Adresse(array $Adresse) {
         $this->setAdresse('num', $Adresse['num']);
         $this->setAdresse('rue', $Adresse['rue']);

@@ -6,6 +6,9 @@ class CvManager {
     private $selectAllAdresse;
     private $selectAllContenu;
     
+    private $selectCV;
+    private $selectContenu;
+    
     private $selectAllNomPersonne;
     private $selectIdAdresse;
     private $selectIdPersonne;
@@ -14,6 +17,7 @@ class CvManager {
     private $insertAdresse;
     private $insertContenu;
     
+    private $deleteAll;
     //--INIT--//
     public function __construct($db) {
         $this->selectAll = $db->prepare("SELECT * FROM personne p, adresse a, categorie c, contenu ct WHERE p.adresse=a.id AND p.id=ct.personne AND c.id=ct.categorie");
@@ -21,13 +25,18 @@ class CvManager {
         $this->selectAllAdresse = $db->prepare("SELECT * FROM adresse a");
         $this->selectAllContenu = $db->prepare("SELECT * FROM contenu ct ");
         
-        $this->selectAllNomPersonne = $db -> prepare("SELECT nom, prenom FROM personne");
+        $this->selectContenu = $db->prepare("SELECT personne, intitule, anneedebut, anneefin, ecole, ville, categorie FROM contenu ct WHERE ct.personne=:idpers ");
+        $this->selectAllNomPersonne = $db -> prepare("SELECT id, nom, prenom FROM personne");
         $this->selectIdAdresse = $db -> prepare("SELECT id FROM adresse a WHERE num=:num AND rue=:rue AND cp=:cp AND ville=:ville AND pays=:pays");
         $this->selectIdPersonne = $db -> prepare("SELECT id FROM personne p WHERE nom=:nom AND prenom=:prenom AND email=:email");
         
         $this->insertAdresse = $db->prepare("INSERT INTO `adresse` (`id` ,`num` ,`rue` ,`cp` ,`ville` ,`pays`) VALUES (NULL ,  :num,  :rue,  :cp,  :ville,  :pays);");
         $this->insertPersonne = $db->prepare("INSERT INTO `personne` (`id`, `nom`, `prenom`, `email`, `intitulecv`, `adresse`) VALUES (NULL, :nom, :prenom, :email, :intitulecv, :idadresse);");
         $this->insertContenu = $db->prepare("INSERT INTO `contenu` (`id`, `intitule`, `anneedebut`, `anneefin`, `ecole`, `ville`, `personne`, `categorie`) VALUES (NULL, :intitule, :anneedebut, :anneefin, :ecole, :ville, :idpersonne, :idcategorie)");
+    
+        $this->deleteAll = $db -> prepare("DELETE FROM `cv`.`adresse`");
+        
+        $this->selectCv = $db->prepare("SELECT * FROM personne p, adresse a, categorie c, contenu ct WHERE p.adresse=a.id AND p.id=ct.personne AND c.id=ct.categorie AND p.id=:id");
     }
     
     //--METHOD--//
@@ -107,6 +116,16 @@ class CvManager {
         return $this->selectAllContenu->fetchAll();
     }
     
+    public function selectCv($id) {
+        $this->selectCv->execute(array(':id'=>$id));
+        return $this->selectCv->fetchAll();
+    }
+    
+     public function selectContenu($idpers) {
+        $this->selectContenu->execute(array(':idpers'=>$idpers));
+        return $this->selectContenu->fetchAll();
+    }
+    
     //--+INSERT+--//
     public function insertAdresse(array $Adresse){
         $this->insertAdresse->execute(array(':num'=>$Adresse['num'], ':rue'=>$Adresse['rue'], ':cp'=>$Adresse['cp'], 
@@ -127,4 +146,11 @@ class CvManager {
                                             ':ville'=>$Contenu['ville'], ':idpersonne'=>$idpersonne, ':idcategorie'=>$categorie));
         return $this->insertContenu->rowCount();
     }
+    
+    //--+DELETE+--//
+    public function deleteAll(){
+        $this->deleteAll->execute();
+        return $this->deleteAll->rowCount();
+    }
+      
 }
